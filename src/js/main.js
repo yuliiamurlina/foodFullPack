@@ -229,11 +229,23 @@ document.addEventListener("DOMContentLoaded", () => {
       fail: "Произошла ошибка",
     };
 
+  const postData = async (url, data) => {
+    let res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: data,
+    });
+
+    return await res.json();
+  };
+
   forms.forEach((form) => {
-    postData(form);
+    bindPostData(form);
   });
 
-  function postData(form) {
+  function bindPostData(form) {
     form.addEventListener("submit", (event) => {
       event.preventDefault();
 
@@ -262,19 +274,9 @@ document.addEventListener("DOMContentLoaded", () => {
       //Создание запроса на сервер
 
       const formData = new FormData(form);
-      const object = {};
-      formData.forEach((value, key) => {
-        object[key] = value;
-      });
+      const json = JSON.stringify(Object.fromEntries(formData.entries()));
 
-      fetch("server.php", {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify(object),
-      })
-        .then((data) => data.text())
+      postData("http://localhost:3000/requests", json)
         .then((data) => {
           console.log(data);
           showThanksModal(message.success);
@@ -313,4 +315,8 @@ document.addEventListener("DOMContentLoaded", () => {
       closeModal();
     }, 2000);
   }
+
+  fetch(" http://localhost:3000/menu")
+    .then((data) => data.json())
+    .then((res) => console.log(res));
 });

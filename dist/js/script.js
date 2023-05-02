@@ -90,8 +90,12 @@
 /*!************************!*\
   !*** ./src/js/main.js ***!
   \************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+!(function webpackMissingModule() { var e = new Error("Cannot find module 'core-js/modules/web.dom-collections.iterator'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
 
 document.addEventListener("DOMContentLoaded", () => {
   //TABS
@@ -283,11 +287,23 @@ document.addEventListener("DOMContentLoaded", () => {
     loading: "img/spinner.svg",
     fail: "Произошла ошибка"
   };
+
+  const postData = async (url, data) => {
+    let res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: data
+    });
+    return await res.json();
+  };
+
   forms.forEach(form => {
-    postData(form);
+    bindPostData(form);
   });
 
-  function postData(form) {
+  function bindPostData(form) {
     form.addEventListener("submit", event => {
       event.preventDefault(); //настройка сообщения об успешной отправке данных формы
 
@@ -310,17 +326,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
       const formData = new FormData(form);
-      const object = {};
-      formData.forEach((value, key) => {
-        object[key] = value;
-      });
-      fetch("server.php", {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json"
-        },
-        body: JSON.stringify(object)
-      }).then(data => data.text()).then(data => {
+      const json = JSON.stringify(Object.fromEntries(formData.entries()));
+      postData("http://localhost:3000/requests", json).then(data => {
         console.log(data);
         showThanksModal(message.success);
         statusMessage.remove();
@@ -353,6 +360,8 @@ document.addEventListener("DOMContentLoaded", () => {
       closeModal();
     }, 2000);
   }
+
+  fetch(" http://localhost:3000/menu").then(data => data.json()).then(res => console.log(res));
 });
 
 /***/ })
