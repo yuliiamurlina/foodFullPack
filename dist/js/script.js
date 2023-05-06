@@ -90,12 +90,8 @@
 /*!************************!*\
   !*** ./src/js/main.js ***!
   \************************/
-/*! no exports provided */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-!(function webpackMissingModule() { var e = new Error("Cannot find module 'core-js/modules/web.dom-collections.iterator'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
+/*! no static exports found */
+/***/ (function(module, exports) {
 
 document.addEventListener("DOMContentLoaded", () => {
   //TABS
@@ -326,8 +322,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
       const formData = new FormData(form);
-      const json = JSON.stringify(Object.fromEntries(formData.entries()));
-      postData("http://localhost:3000/requests", json).then(data => {
+      const object = {};
+      formData.forEach((value, key) => {
+        object[key] = value;
+      });
+      postData("http://localhost:3000/requests", JSON.stringify(object)).then(data => {
         console.log(data);
         showThanksModal(message.success);
         statusMessage.remove();

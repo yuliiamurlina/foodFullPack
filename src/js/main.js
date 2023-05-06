@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   //Timer
 
-  const deadLine = new Date("2023-04-29");
+  const deadLine = new Date("2023-05-20");
 
   function getTimeRemaining(endtime) {
     let days, hours, minutes, seconds;
@@ -192,33 +192,52 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  new MenuCard(
-    "img/tabs/vegy.jpg",
-    "vegy",
-    'Меню "Фитнес',
-    'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
-    9,
-    ".menu .container",
-    "menu__item"
-  ).render();
-  new MenuCard(
-    "img/tabs/elite.jpg",
-    "elite",
-    'Меню "Премиум',
-    "В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!",
-    20,
-    ".menu .container",
-    "menu__item"
-  ).render();
-  new MenuCard(
-    "img/tabs/post.jpg",
-    "post",
-    'Меню "Постное',
-    "Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.",
-    13,
-    ".menu .container",
-    "menu__item"
-  ).render();
+  const getResourse = async (url) => {
+    let res = await fetch(url);
+    if (!res.ok) {
+      throw new Error(
+        `Получение данные не произошло. Could not fetch ${url}, status: ${res.status}`
+      );
+    }
+
+    return await res.json();
+  };
+
+  // getResourse("http://localhost:3000/menu").then((data) => {
+  //   data.forEach(({ img, altimg, title, descr, price }) => {
+  //     new MenuCard(
+  //       img,
+  //       altimg,
+  //       title,
+  //       descr,
+  //       price,
+  //       ".menu .container"
+  //     ).render();
+  //   });
+  // });
+
+  axios.get("http://localhost:3000/menu").then((data) =>
+    data.data.forEach(({ img, altimg, title, descr, price }) => {
+      new MenuCard(
+        img,
+        altimg,
+        title,
+        descr,
+        price,
+        ".menu .container"
+      ).render();
+    })
+  );
+
+  // new MenuCard(
+  //   "img/tabs/vegy.jpg",
+  //   "vegy",
+  //   'Меню "Фитнес',
+  //   'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
+  //   9,
+  //   ".menu .container",
+  //   "menu__item"
+  // ).render();
 
   //forms
 
@@ -319,4 +338,63 @@ document.addEventListener("DOMContentLoaded", () => {
   fetch(" http://localhost:3000/menu")
     .then((data) => data.json())
     .then((res) => console.log(res));
+
+  //slider
+
+  const slides = document.querySelectorAll(".offer__slide"),
+    prev = document.querySelector(".offer__slider-prev"),
+    next = document.querySelector(".offer__slider-next"),
+    total = document.querySelector("#total"),
+    current = document.querySelector("#current");
+
+  let slideIndex = 1;
+  showSlide(slideIndex);
+
+  if (slides.length > 9) {
+    total.textContent = slides.length;
+  } else {
+    total.textContent = "0" + slides.length;
+  }
+
+  prev.addEventListener("click", () => {
+    plusSlides(-1);
+  });
+
+  next.addEventListener("click", () => {
+    plusSlides(1);
+  });
+
+  function showSlide(index) {
+    if (index > slides.length) {
+      slideIndex = 1;
+    }
+
+    if (index < 1) {
+      slideIndex = slides.length;
+    }
+
+    slides.forEach((slide) => {
+      slide.classList.add("hide");
+      slide.classList.remove("show");
+    });
+
+    slides[slideIndex - 1].classList.add("show");
+    slides[slideIndex - 1].classList.remove("hide");
+
+    if (slides.length > 9) {
+      current.textContent = slideIndex;
+    } else {
+      current.textContent = "0" + slideIndex;
+    }
+  }
+
+  function plusSlides(n) {
+    showSlide((slideIndex += n));
+  }
+  // function slideCount(func) {
+  //   totalSlideCounter.textContent = `${
+  //     slideTotal > 9 ? slideTotal : "0" + slideTotal
+  //   }`;
+  //   currentSlideCounter.textContent = `${func > 9 ? func : "0" + func}`;
+  // }
 });
