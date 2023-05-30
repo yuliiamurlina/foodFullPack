@@ -1,52 +1,55 @@
-function modale() {
-  const modalButtons = document.querySelectorAll("[data-modal]"),
-    modal = document.querySelector(".modal"),
-    modalTimer = setInterval(openModal, 10000);
+function closeModal(modalSelector) {
+  const modal = document.querySelector(modalSelector);
 
-  modalButtons.forEach((btn) => {
-    btn.addEventListener("click", openModal);
+  modal.classList.add("hide");
+  modal.classList.remove("show", "fade");
+  document.body.style.overflow = "";
+}
+
+function openModal(modalSelector, modalTimerId) {
+  const modal = document.querySelector(modalSelector);
+
+  modal.classList.add("show", "fade");
+  modal.classList.remove("hide");
+  document.body.style.overflow = "hidden";
+
+  if (modalTimerId) {
+    clearInterval(modalTimerId);
+  }
+}
+
+function modal(triggerSelector, modalSelector, modalTimerId) {
+  const modalTrigger = document.querySelectorAll(triggerSelector),
+    modal = document.querySelector(modalSelector);
+
+  modalTrigger.forEach((btn) => {
+    btn.addEventListener("click", () => openModal(modalSelector, modalTimerId));
   });
 
-  modal.addEventListener("click", (event) => {
-    if (
-      event.target == modal ||
-      event.target.getAttribute("data-close") == ""
-    ) {
-      closeModal();
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal || e.target.getAttribute("data-close") == "") {
+      closeModal(modalSelector);
     }
   });
 
   document.addEventListener("keydown", (e) => {
-    if (e.code === "Escape") {
-      closeModal();
+    if (e.code === "Escape" && modal.classList.contains("show")) {
+      closeModal(modalSelector);
     }
   });
 
-  function openModal() {
-    modal.classList.add("show", "fade");
-    modal.classList.remove("hide");
-    document.body.style.overflow = "hidden";
-    clearInterval(modalTimer);
-    window.removeEventListener("scroll", openModalByScroll);
-  }
-
-  function closeModal() {
-    modal.classList.add("hide");
-    modal.classList.remove("show", "fade");
-    document.body.style.overflow = "";
-  }
-
-  function openModalByScroll() {
+  function showModalByScroll() {
     if (
       window.pageYOffset + document.documentElement.clientHeight >=
-      document.documentElement.scrollHeight - 20
+      document.documentElement.scrollHeight - 30
     ) {
-      openModal();
-      window.removeEventListener("scroll", openModalByScroll);
+      openModal(modalSelector, modalTimerId);
+      window.removeEventListener("scroll", showModalByScroll);
     }
   }
-
-  window.addEventListener("scroll", openModalByScroll);
+  window.addEventListener("scroll", showModalByScroll);
 }
 
-module.exports = modale;
+export default modal;
+export { closeModal };
+export { openModal };
